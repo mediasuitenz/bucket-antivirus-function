@@ -32,6 +32,8 @@ AV_STATUS_METADATA = os.getenv("AV_STATUS_METADATA", "av-status")
 AV_STATUS_SNS_ARN = os.getenv("AV_STATUS_SNS_ARN")
 AV_STATUS_SNS_PUBLISH_CLEAN = os.getenv("AV_STATUS_SNS_PUBLISH_CLEAN", "True")
 AV_STATUS_SNS_PUBLISH_INFECTED = os.getenv("AV_STATUS_SNS_PUBLISH_INFECTED", "True")
+AV_STATUS_POST_URL = os.getenv("AV_STATUS_POST_URL")
+AV_STATUS_POST_KEY_SECRET_NAME = os.getenv("AV_STATUS_POST_KEY_SECRET_NAME")
 AV_TIMESTAMP_METADATA = os.getenv("AV_TIMESTAMP_METADATA", "av-timestamp")
 CLAMAVLIB_PATH = os.getenv("CLAMAVLIB_PATH", "./bin")
 CLAMSCAN_PATH = os.getenv("CLAMSCAN_PATH", "./bin/clamscan")
@@ -59,4 +61,5 @@ def create_dir(path):
 
 
 def get_timestamp():
-    return datetime.datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S UTC")
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+

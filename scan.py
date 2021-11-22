@@ -18,6 +18,9 @@ import json
 import os
 from urllib.parse import unquote_plus
 from distutils.util import strtobool
+import requests
+import urllib
+from uuid import UUID
 
 import boto3
 
@@ -39,6 +42,8 @@ from common import AV_STATUS_SNS_PUBLISH_INFECTED
 from common import AV_TIMESTAMP_METADATA
 from common import SNS_ENDPOINT
 from common import S3_ENDPOINT
+from common import AV_STATUS_POST_URL
+from common import AV_STATUS_POST_KEY_SECRET_NAME
 from common import create_dir
 from common import get_timestamp
 
@@ -200,6 +205,41 @@ def sns_scan_results(
     )
 
 
+def get_uuid(file):
+    return os.path.basename(os.path.dirname(file))
+
+
+def get_secret(name):
+    client = boto3.client('ssm')
+
+    param = client.get_parameter(Name=name, WithDecryption=True)
+    return param['Parameter']['Value']
+
+
+def post_results(url, s3_object, scan_result, scan_signature, scan_timestamp):
+    payload = {
+        AV_SIGNATURE_METADATA: scan_signature,
+        AV_STATUS_METADATA: scan_result,
+        AV_TIMESTAMP_METADATA: scan_timestamp
+    }
+    uuid = get_uuid(s3_object.key)
+    # Check it's a valid uuid.
+    UUID(uuid)
+
+    headers = {}
+    if AV_STATUS_POST_KEY_SECRET_NAME:
+        headers={
+            'Authorization': f'Api-Key {get_secret(AV_STATUS_POST_KEY_SECRET_NAME)}'
+        }
+
+    result = requests.put(
+        f'{urllib.parse.urljoin(url, uuid)}/',
+        json=payload,
+        headers=headers
+    )
+    result.raise_for_status()
+
+
 def lambda_handler(event, context):
     s3 = boto3.resource("s3", endpoint_url=S3_ENDPOINT)
     s3_client = boto3.client("s3", endpoint_url=S3_ENDPOINT)
@@ -257,6 +297,9 @@ def lambda_handler(event, context):
             scan_signature,
             result_time,
         )
+
+    if AV_STATUS_POST_URL:
+        post_results(AV_STATUS_POST_URL, s3_object, scan_result, scan_signature, result_time)
 
     metrics.send(
         env=ENV, bucket=s3_object.bucket_name, key=s3_object.key, status=scan_result
