@@ -10,7 +10,7 @@ repos:
             scripts/gen-docs-index|
           )$
 
-  - repo: git://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.2.3
     hooks:
       - id: check-ast
@@ -24,13 +24,13 @@ repos:
       - id: flake8
       - id: trailing-whitespace
 
-  - repo: git://github.com/igorshubovych/markdownlint-cli
+  - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.17.0
     hooks:
       - id: markdownlint
         entry: markdownlint --ignore .github/*.md
 
-  - repo: git://github.com/aws-cloudformation/cfn-python-lint
+  - repo: https://github.com/aws-cloudformation/cfn-python-lint
     rev: v0.49.0
     hooks:
       - id: cfn-python-lint
