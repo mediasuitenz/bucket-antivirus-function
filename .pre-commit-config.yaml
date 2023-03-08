@@ -1,10 +1,9 @@
 repos:
 
   - repo: https://github.com/ambv/black
-    rev: 19.3b0
+    rev: '23.1.0'
     hooks:
       - id: black
-        language_version: python3.7
         exclude: >
           (?x)^(
             scripts/gen-docs-index|
@@ -25,13 +24,13 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.17.0
+    rev: v0.33.0
     hooks:
       - id: markdownlint
         entry: markdownlint --ignore .github/*.md
 
   - repo: https://github.com/aws-cloudformation/cfn-python-lint
-    rev: v0.49.0
+    rev: v0.74.1
     hooks:
-      - id: cfn-python-lint
+      - id: cfn-lint
         files: deploy/
