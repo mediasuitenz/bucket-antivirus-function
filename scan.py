@@ -49,7 +49,6 @@ from common import get_timestamp
 
 
 def event_object(event, event_source="s3"):
-
     # SNS events are slightly different
     if event_source.upper() == "SNS":
         event = json.loads(event["Records"][0]["Sns"]["Message"])
@@ -210,17 +209,17 @@ def get_uuid(file):
 
 
 def get_secret(name):
-    client = boto3.client('ssm')
+    client = boto3.client("ssm")
 
     param = client.get_parameter(Name=name, WithDecryption=True)
-    return param['Parameter']['Value']
+    return param["Parameter"]["Value"]
 
 
 def post_results(url, s3_object, scan_result, scan_signature, scan_timestamp):
     payload = {
         AV_SIGNATURE_METADATA: scan_signature,
         AV_STATUS_METADATA: scan_result,
-        AV_TIMESTAMP_METADATA: scan_timestamp
+        AV_TIMESTAMP_METADATA: scan_timestamp,
     }
     uuid = get_uuid(s3_object.key)
     # Check it's a valid uuid.
@@ -228,14 +227,12 @@ def post_results(url, s3_object, scan_result, scan_signature, scan_timestamp):
 
     headers = {}
     if AV_STATUS_POST_KEY_SECRET_NAME:
-        headers={
-            'Authorization': f'Api-Key {get_secret(AV_STATUS_POST_KEY_SECRET_NAME)}'
+        headers = {
+            "Authorization": f"Api-Key {get_secret(AV_STATUS_POST_KEY_SECRET_NAME)}"
         }
 
     result = requests.put(
-        f'{urllib.parse.urljoin(url, uuid)}/',
-        json=payload,
-        headers=headers
+        f"{urllib.parse.urljoin(url, uuid)}/", json=payload, headers=headers
     )
     result.raise_for_status()
 
@@ -299,7 +296,9 @@ def lambda_handler(event, context):
         )
 
     if AV_STATUS_POST_URL:
-        post_results(AV_STATUS_POST_URL, s3_object, scan_result, scan_signature, result_time)
+        post_results(
+            AV_STATUS_POST_URL, s3_object, scan_result, scan_signature, result_time
+        )
 
     metrics.send(
         env=ENV, bucket=s3_object.bucket_name, key=s3_object.key, status=scan_result
