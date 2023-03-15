@@ -32,7 +32,9 @@ jobs:
       - checkout
       - run:
           name: Build
-          command: make archive
+          command: |
+            make archive
+            ls -l build
 
   # `pre_commit_deps` is used for cache pre-commit sources
   pre_commit_deps:
