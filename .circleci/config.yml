@@ -29,9 +29,6 @@ jobs:
     steps:
       - setup_remote_docker:
           version: 20.10.14
-      - run:
-          name: Dependencies
-          command: apk add --no-cache make git curl openssh
       - checkout
       - run:
           name: Build
