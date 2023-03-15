@@ -188,7 +188,7 @@ def sns_scan_results(
         "version": s3_object.version_id,
         AV_SIGNATURE_METADATA: scan_signature,
         AV_STATUS_METADATA: scan_result,
-        AV_TIMESTAMP_METADATA: get_timestamp(),
+        AV_TIMESTAMP_METADATA: timestamp,
     }
     sns_client.publish(
         TargetArn=sns_arn,
