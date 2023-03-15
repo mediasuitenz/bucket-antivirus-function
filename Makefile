@@ -35,8 +35,11 @@ clean:  ## Clean build artifacts
 .PHONY: archive
 archive: clean  ## Create the archive for AWS lambda
 	docker build --platform linux/amd64 -t bucket-antivirus-function:latest .
+	docker rm bucket-antivirus-function || true
+	docker run --platform linux/amd64 --name bucket-antivirus-function bucket-antivirus-function:latest
 	mkdir -p ./build/
-	docker run --platform linux/amd64 -v $(current_dir)/build:/opt/mount --rm --entrypoint cp bucket-antivirus-function:latest /opt/app/build/lambda.zip /opt/mount/lambda.zip
+	docker cp bucket-antivirus-function:/opt/app/build/lambda.zip build/lambda.zip
+	docker rm bucket-antivirus-function || true
 
 .PHONY: pre_commit_install  ## Ensure that pre-commit hook is installed and kept up to date
 pre_commit_install: .git/hooks/pre-commit ## Ensure pre-commit is installed
