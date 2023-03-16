@@ -20,8 +20,10 @@ executors:
     docker:
       - image: cimg/python:3.7
 
-jobs:
+orbs:
+  aws-cli: circleci/aws-cli@3.1.4
 
+jobs:
   # `build` is used for building the archive
   build:
     executor: primary
@@ -29,12 +31,13 @@ jobs:
     steps:
       - setup_remote_docker:
           version: 20.10.14
+      - aws-cli/install
       - checkout
       - run:
           name: Build
           command: |
             make archive
-            ls -l build
+            aws s3 cp build/lambda.zip s3://ms-bucket-antivirus-function/lambda-$(git describe --tags).zip
 
   # `pre_commit_deps` is used for cache pre-commit sources
   pre_commit_deps:
