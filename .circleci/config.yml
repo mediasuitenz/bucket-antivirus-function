@@ -83,17 +83,41 @@ jobs:
 
 workflows:
   main:
-    when:
-      or:
-        - matches: { pattern: "^v.+$", value: << pipeline.git.tag >> }
-        - matches: { pattern: ".*", value: << pipeline.git.branch >> }
     jobs:
-      - pre_commit_deps
+      - pre_commit_deps:
+          filters:
+            branches:
+              only:
+                - /^.*$/
+            tags:
+              only:
+                - /^v.*$/
       - pre_commit_test:
           requires:
             - pre_commit_deps
-      - test
+          filters:
+            branches:
+              only:
+                - /^.*$/
+            tags:
+              only:
+                - /^v.*$/
+      - test:
+          filters:
+            branches:
+              only:
+                - /^.*$/
+            tags:
+              only:
+                - /^v.*$/
       - build:
+          filters:
+            branches:
+              only:
+                - /^.*$/
+            tags:
+              only:
+                - /^v.*$/
           requires:
             - pre_commit_test
             - test
