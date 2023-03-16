@@ -15,10 +15,10 @@ executors:
       - image: cimg/base:2022.06
   python_test:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
   pre_commit_test:
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
 
 orbs:
   aws-cli: circleci/aws-cli@3.1.4
