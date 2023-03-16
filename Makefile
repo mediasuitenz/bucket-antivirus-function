@@ -16,6 +16,9 @@ AMZ_LINUX_VERSION:=2
 current_dir := $(shell pwd)
 container_dir := /opt/app
 circleci := ${CIRCLECI}
+tag := ${CIRCLE_TAG}
+
+path=$(if $(tag),lambda/lambda-$(tag).zip,lambda/alpha/lambda-$(shell git describe --tags).zip)
 
 .PHONY: help
 help:  ## Print the help documentation
@@ -40,6 +43,10 @@ archive: clean  ## Create the archive for AWS lambda
 	mkdir -p ./build/
 	docker cp bucket-antivirus-function:/opt/app/build/lambda.zip build/lambda.zip
 	docker rm bucket-antivirus-function || true
+
+.PHONY: deploy
+deploy: archive
+	aws s3 cp build/lambda.zip s3://ms-bucket-antivirus-function/${path}
 
 .PHONY: pre_commit_install  ## Ensure that pre-commit hook is installed and kept up to date
 pre_commit_install: .git/hooks/pre-commit ## Ensure pre-commit is installed
