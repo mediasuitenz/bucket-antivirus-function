@@ -83,6 +83,10 @@ jobs:
 
 workflows:
   main:
+    when:
+      or:
+        - matches: { pattern: "^v.+$", value: << pipeline.git.tag >> }
+        - matches: { pattern: ".*", value: << pipeline.git.branch >> }
     jobs:
       - pre_commit_deps
       - pre_commit_test:
