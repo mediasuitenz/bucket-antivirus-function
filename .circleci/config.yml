@@ -7,12 +7,12 @@
 #
 ############
 
-version: "2.1"
+version: 2.1
 
 executors:
   primary:
     docker:
-      - image: docker:17.05.0-ce
+      - image: cimg/base:2022.06
   python_test:
     docker:
       - image: cimg/python:3.7
@@ -20,23 +20,24 @@ executors:
     docker:
       - image: cimg/python:3.7
 
-jobs:
+orbs:
+  aws-cli: circleci/aws-cli@3.1.4
 
+jobs:
   # `build` is used for building the archive
   build:
     executor: primary
     working_directory: ~/src
     steps:
       - setup_remote_docker:
-          reusable: true    # default - false
-          exclusive: true   # default - true
-      - run:
-          name: Dependencies
-          command: apk add --no-cache make git curl openssh
+          version: 20.10.14
+      - aws-cli/install
       - checkout
       - run:
           name: Build
-          command: make archive
+          command: |
+            make archive
+            make deploy
 
   # `pre_commit_deps` is used for cache pre-commit sources
   pre_commit_deps:
@@ -47,7 +48,7 @@ jobs:
       - restore_cache:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-      - run: sudo pip install pre-commit==2.12.1
+      - run: pip install pre-commit==2.21.0
       - run: pre-commit install-hooks
 
       - save_cache:
@@ -63,7 +64,7 @@ jobs:
       - restore_cache:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-      - run: sudo pip install pre-commit==1.18.3
+      - run: pip install pre-commit==2.21.0
       - run:
           name: Run pre-commit tests
           command: pre-commit run --all-files
@@ -76,13 +77,11 @@ jobs:
       - restore_cache:
           keys:
             - pre-commit-dot-cache-{{ checksum ".pre-commit-config.yaml" }}
-      - run: sudo pip install -r requirements.txt
-      - run: sudo pip install -r requirements-dev.txt
+      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-dev.txt
       - run: nosetests
 
 workflows:
-  version: 2
-
   main:
     jobs:
       - pre_commit_deps
