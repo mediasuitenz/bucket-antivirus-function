@@ -25,8 +25,9 @@ RUN python3.8 -m pip install -r requirements.txt && rm -rf /root/.cache/pip
 WORKDIR /tmp
 RUN set -o pipefail && \
     yumdownloader -x \*i686 --archlist=x86_64 \
-        clamav clamav-lib clamav-update json-c pcre libxml2 xz-libs \
-        libprelude gnutls libtasn1 lib64nettle nettle libtool-ltdl && \
+        clamav clamav-lib clamav-update json-c pcre libxml2 xz-libs libcurl \
+        libprelude gnutls libtasn1 lib64nettle nettle libtool-ltdl libnghttp2 \
+        libidn2 libssh2 openldap libunistring cyrus-sasl-lib && \
     find . -name '*.rpm' -exec bash -c "rpm2cpio {} | cpio -idmv" \;
 
 # Copy over the binaries and libraries
