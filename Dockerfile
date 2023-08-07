@@ -14,6 +14,7 @@ RUN yum update -y && \
         amazon-linux-extras \
         cpio yum-utils zip unzip less \
         https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
+    amazon-linux-extras && \
     amazon-linux-extras enable python3.7 && \
     yum install -y python37-pip && \
     yum clean all
