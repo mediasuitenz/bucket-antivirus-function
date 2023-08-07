@@ -14,12 +14,12 @@ RUN yum update -y && \
         amazon-linux-extras \
         cpio yum-utils zip unzip less \
         https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
-    amazon-linux-extras enable python3.8 && \
-    yum install -y python38-pip && \
+    amazon-linux-extras enable python3.7 && \
+    yum install -y python37-pip && \
     yum clean all
 
 # This had --no-cache-dir, tracing through multiple tickets led to a problem in wheel
-RUN python3.8 -m pip install -r requirements.txt && rm -rf /root/.cache/pip
+RUN python3.7 -m pip install -r requirements.txt && rm -rf /root/.cache/pip
 
 # Download libraries we need to run in lambda
 WORKDIR /tmp
@@ -40,7 +40,7 @@ RUN echo "DatabaseMirror database.clamav.net" > /opt/app/bin/freshclam.conf && \
 WORKDIR /opt/app
 RUN zip -r9 --exclude="*test*" /opt/app/build/lambda.zip ./*.py bin
 
-WORKDIR /usr/local/lib/python3.8/site-packages
+WORKDIR /usr/local/lib/python3.7/site-packages
 RUN zip -r9 /opt/app/build/lambda.zip ./*
 
 WORKDIR /opt/app
