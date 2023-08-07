@@ -23,15 +23,14 @@ RUN python3.8 -m pip install -r requirements.txt && rm -rf /root/.cache/pip
 
 # Download libraries we need to run in lambda
 WORKDIR /tmp
-RUN set -o pipefail && \
-    yumdownloader -x \*i686 --archlist=x86_64 \
-        clamav clamav-lib clamav-update json-c pcre libxml2 xz-libs libcurl \
-        libprelude gnutls libtasn1 lib64nettle nettle libtool-ltdl libnghttp2 \
-        libidn2 libssh2 openldap libunistring cyrus-sasl-lib && \
+RUN yumdownloader -x \*i686 --archlist=x86_64 \
+    clamav clamav-lib clamav-update json-c pcre libxml2 xz-libs libcurl \
+    libprelude gnutls libtasn1 lib64nettle nettle libtool-ltdl libnghttp2 \
+    libidn2 libssh2 openldap libunistring cyrus-sasl-lib openssl-libs && \
     find . -name '*.rpm' -exec bash -c "rpm2cpio {} | cpio -idmv" \;
 
 # Copy over the binaries and libraries
-RUN cp /tmp/usr/bin/clamscan /tmp/usr/bin/freshclam /tmp/usr/lib64/* /opt/app/bin/
+RUN cp -r /tmp/usr/bin/clamscan /tmp/usr/bin/freshclam /tmp/usr/lib64/* /opt/app/bin/
 
 # Fix the freshclam.conf settings
 RUN echo "DatabaseMirror database.clamav.net" > /opt/app/bin/freshclam.conf && \
