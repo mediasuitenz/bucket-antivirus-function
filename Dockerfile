@@ -26,7 +26,7 @@ WORKDIR /tmp
 RUN yumdownloader -x \*i686 --archlist=x86_64 \
     clamav clamav-lib clamav-update json-c pcre libxml2 xz-libs libcurl \
     libprelude gnutls libtasn1 lib64nettle nettle libtool-ltdl libnghttp2 \
-    libidn2 libssh2 openldap libunistring cyrus-sasl-lib openssl-libs nss libcrypt && \
+    libidn2 libssh2 openldap libunistring cyrus-sasl-lib openssl-libs nss libcrypt libcrypt-nss && \
     find . -name '*.rpm' -exec bash -c "rpm2cpio {} | cpio -idmv" \;
 
 # Copy over the binaries and libraries
