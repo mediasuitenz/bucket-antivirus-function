@@ -11,16 +11,13 @@ COPY requirements.txt /opt/app/requirements.txt
 # Install packages
 RUN yum update -y && \
     yum install -y \
-        amazon-linux-extras \
         cpio yum-utils zip unzip less \
         https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
-    amazon-linux-extras && \
-    amazon-linux-extras enable python3.7 && \
-    yum install -y python37-pip && \
+    yum install -y python3-pip && \
     yum clean all
 
 # This had --no-cache-dir, tracing through multiple tickets led to a problem in wheel
-RUN python3.7 -m pip install -r requirements.txt && rm -rf /root/.cache/pip
+RUN python3 -m pip install -r requirements.txt && rm -rf /root/.cache/pip
 
 # Download libraries we need to run in lambda
 WORKDIR /tmp
