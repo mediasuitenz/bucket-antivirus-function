@@ -23,13 +23,16 @@ RUN python3 -m pip install -r requirements.txt && rm -rf /root/.cache/pip
 WORKDIR /tmp
 RUN set -o pipefail && \
     yumdownloader -x \*i686 --archlist=x86_64 \
-        clamav clamav-lib clamav-update json-c pcre2 \
-        libprelude gnutls libtasn1 lib64nettle nettle libtool-ltdl && \
+        clamav clamav-lib clamav-update json-c pcre2 libtool-ltdl && \
     find . -name '*.rpm' -exec bash -c "rpm2cpio {} | cpio -idmv" \;
 
 # Copy over the binaries and libraries
-RUN cp /tmp/usr/bin/clamscan /tmp/usr/bin/freshclam /tmp/usr/lib64/* /opt/app/bin/
+RUN cp /tmp/usr/bin/clamscan /tmp/usr/bin/freshclam /tmp/usr/lib64/*.so.? /opt/app/bin/
+WORKDIR /opt/app/bin
+RUN cp $(LD_LIBRARY_PATH=. ldd clamscan | cut -d' ' -f3 | grep lib64 | grep -v libc\.so) .
+RUN cp $(LD_LIBRARY_PATH=. ldd freshclam | cut -d' ' -f3 | grep lib64 | grep -v libc\.so) .
 
+WORKDIR /opt/app
 # Fix the freshclam.conf settings
 RUN echo "DatabaseMirror database.clamav.net" > /opt/app/bin/freshclam.conf && \
     echo "CompressLocalDatabase yes" >> /opt/app/bin/freshclam.conf
