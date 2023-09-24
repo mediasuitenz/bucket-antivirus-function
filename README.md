@@ -165,14 +165,29 @@ It should be in the format provided below:
 You may want to scan all the objects in a bucket that have not previously been scanned or were created
 prior to setting up your lambda functions. To do this you can use the `scan_bucket.py` utility.
 
+First set up your environment variables:
+
 ```sh
-pip install boto3
-scan_bucket.py --lambda-function-name=<lambda_function_name> --s3-bucket-name=<s3-bucket-to-scan>
+cp .envrc.local.template .envrc.local
 ```
 
+Find the Lambda in the AWS console and copy the environment variables for AV_TIMESTAMP_METADATA and AV_STATUS_METADATA into that file.
+
+Ensure you set the AWS_PROFILE env var to the correct AWS profile name so that boto3 will use the correct AWS account/role to find the lambda and bucket.
+
+Then you can set up and run the utility:
+
+```sh
+python -m venv venv
+pip install -r requirements.txt
+pip install boto3
+. ./.envrc.local && python scan_bucket.py --lambda-function-name=<lambda_function_name> --s3-bucket-name=<s3-bucket-to-scan>
+```
+
+You can pass the `--dry-run` flag to check that the right files will be skipped/scanned.
+
 This tool will scan all objects that have not been previously scanned in the bucket and invoke the lambda function
-asynchronously. As such you'll have to go to your cloudwatch logs to see the scan results or failures. Additionally,
-the script uses the same environment variables you'd use in your lambda so you can configure them similarly.
+asynchronously. As such you'll have to go to your CloudWatch logs to see the scan results or failures.
 
 ## Testing
 
