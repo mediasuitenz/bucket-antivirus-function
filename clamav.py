@@ -32,6 +32,7 @@ from common import AV_SIGNATURE_OK
 from common import AV_SIGNATURE_UNKNOWN
 from common import AV_STATUS_CLEAN
 from common import AV_STATUS_INFECTED
+from common import AV_ADDITIONAL_SCAN_FLAGS
 from common import CLAMAVLIB_PATH
 from common import CLAMSCAN_PATH
 from common import FRESHCLAM_PATH
@@ -183,9 +184,23 @@ def scan_output_to_json(output):
 def scan_file(path):
     av_env = os.environ.copy()
     av_env["LD_LIBRARY_PATH"] = CLAMAVLIB_PATH
+    process_args = [
+        CLAMSCAN_PATH,
+        "-v",
+        "-a",
+        "--stdout",
+        "-d",
+        AV_DEFINITION_PATH,
+        path,
+    ]
+
+    # Insert additional flags into argument list if present
+    if AV_ADDITIONAL_SCAN_FLAGS:
+        process_args.insert(1, AV_ADDITIONAL_SCAN_FLAGS)
+
     print("Starting clamscan of %s." % path)
     av_proc = subprocess.Popen(
-        [CLAMSCAN_PATH, "-v", "-a", "--stdout", "-d", AV_DEFINITION_PATH, path],
+        process_args,
         stderr=subprocess.STDOUT,
         stdout=subprocess.PIPE,
         env=av_env,

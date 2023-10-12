@@ -18,6 +18,7 @@ import datetime
 import os
 import os.path
 
+AV_ADDITIONAL_SCAN_FLAGS = os.getenv("AV_ADDITIONAL_SCAN_FLAGS")
 AV_DEFINITION_S3_BUCKET = os.getenv("AV_DEFINITION_S3_BUCKET")
 AV_DEFINITION_S3_PREFIX = os.getenv("AV_DEFINITION_S3_PREFIX", "clamav_defs")
 AV_DEFINITION_PATH = os.getenv("AV_DEFINITION_PATH", "/tmp/clamav_defs")

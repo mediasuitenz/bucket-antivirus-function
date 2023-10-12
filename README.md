@@ -83,6 +83,7 @@ the table below for reference.
 
 | Variable | Description | Default | Required |
 | --- | --- | --- | --- |
+| AV_ADDITIONAL_SCAN_FLAGS | Additional flags to be passed to the `clamscan` command |  | No |
 | AV_DEFINITION_S3_BUCKET | Bucket containing antivirus definition files |  | Yes |
 | AV_DEFINITION_S3_PREFIX | Prefix for antivirus definition files | clamav_defs | No |
 | AV_DEFINITION_PATH | Path containing files at runtime | /tmp/clamav_defs | No |
