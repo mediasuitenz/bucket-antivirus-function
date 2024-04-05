@@ -30,7 +30,7 @@ jobs:
     working_directory: ~/src
     steps:
       - setup_remote_docker:
-          version: 20.10.14
+          version: default
       - aws-cli/install
       - checkout
       - run:
